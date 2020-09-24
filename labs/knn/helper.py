@@ -178,7 +178,6 @@ def calculate_kernel_value(u, kernel):
     return result
 
 
-
 # dataset = ([...attrs], label)
 # target = [...attrs]
 # distance
@@ -225,19 +224,17 @@ def predict_class_of_target_naive(dataset: List[Tuple[List[float], int]], target
 
 
 def predict_class_of_target_onehot(dataset: List[Tuple[List[float], int]], target: List[float],
-                                   model, max_class_num) -> int:
-    sorted_data = \
-        sorted(
-            dataset,
-            key=lambda x: calculate_distance(x[0], target, model.distance)
-        )
-    if model.window_param == Window.variable:
-        window_param = calculate_distance(sorted_data[model.window_param][0], target, model.distance)
-    else:
-        window_param = model.window_param
-    classes_count_arr = [0] * max_class_num  # TODO: class num
-    for row in dataset:
-        u = calculate_distance(row[0], target, model.distance) / window_param
-        real_class = row[1]
-        classes_count_arr[int(real_class)] += calculate_kernel_value(u, model.kernel)
+                                   model: Model, max_class_num: int) -> int:
+    classes_count_arr: List[float] = [0] * max_class_num
+    for cl in range(max_class_num):
+        modified_dataset = []
+        for row in dataset:
+            if row[1] == cl:
+                modified_dataset.append((row[0], 1))
+            else:
+                modified_dataset.append((row[0], 0))
+
+        classes_count_arr[cl] = non_parametric_regression(
+            modified_dataset, target, model.distance, model.kernel, model.window, model.window_param)
+
     return classes_count_arr.index(max(classes_count_arr))
