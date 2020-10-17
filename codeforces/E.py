@@ -1,6 +1,7 @@
 import random
 import time
 
+
 class SVMModel(object):
     def __init__(self, n, c):
         self.alphas = [0] * n
@@ -60,8 +61,6 @@ def simplified_SMO(ks, ys, c):
                 j = others[i]
                 if j == i:
                     continue
-                # range_j = list(range(0, i)) + list(range(i + 1, n))
-                # j = random.choice(range_j)
                 prev_alpha_i = cur_model.alphas[i]
                 prev_alpha_j = cur_model.alphas[j]
                 e_j = f(cur_model, ks, ys, j) - ys[j]
@@ -71,7 +70,6 @@ def simplified_SMO(ks, ys, c):
                 nu = 2 * ks[i][j] - ks[i][i] - ks[j][j]
                 if nu > 1e-7:
                     continue
-                # THIS
                 new_alpha_j = update_alpha(prev_alpha_j, e_i, e_j, ys[j], nu, ll, h)
                 cur_model.alphas[j] = new_alpha_j
                 if abs(new_alpha_j - prev_alpha_j) < eps:
@@ -85,11 +83,6 @@ def simplified_SMO(ks, ys, c):
                     cur_model.b = b1
                 if 0 < new_alpha_j < cur_model.c:
                     cur_model.b = b2
-                was_changed = True
-            end_time = time.time()
-            # if abs(end_time - start_time) > 4.8:
-            #     return cur_model
-
     return cur_model
 
 
